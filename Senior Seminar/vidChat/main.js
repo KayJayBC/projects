@@ -34,5 +34,15 @@ const servers = {
 
 //This is the object resposible for the P2P connection work
 let pc = new RTCPeerConnection(servers);
+
+//Objects of each webcam in the chat
 let localCam = null;
 let remoteCam = null;
+
+//Importing HTML Elements
+const myCamButton = document.getElementsById('localCam');
+const theyCamButton = document.getElementsById('remoteCam');
+const startCam = document.getElementsById('getMedia');
+const callButton = document.getElementsById('initCall');
+const callInput = document.getElementsById('callKey');
+const endCall = document.getElementsById('hangup');

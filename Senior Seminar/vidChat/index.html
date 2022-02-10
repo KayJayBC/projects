@@ -4,10 +4,31 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <title>Video Chat</title>
   </head>
   <body>
-    <div id="app"></div>
+    <center>
+    <div class="webcams">
+      
+      <span>
+        <h1>You</h1>
+        <video id="localCam" autoplay playsinline></video>
+      </span>
+      <span>
+        <h1>Visitor</h1>
+        <video id="remoteCam" autoplay playsinline></video>
+      </span>
+    </div>
+
+    <button id="getMedia">Start Your Webcam</button><br>
+    <button id="initCall" disabled>Call</button><br>
+
+    <input id="callKey" />
+    <button id="answer" disabled>Answer Call</button><br>
+    <button id="hangup">Hangup</button>
+
+  </center>
+
     <script type="module" src="/main.js"></script>
   </body>
 </html>
