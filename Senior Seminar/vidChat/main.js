@@ -1,7 +1,7 @@
 
-import './style.css';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
+//import './style.css';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js';
+import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js';
 //import { initializeApp } from "firebase/app";
 
 
@@ -19,11 +19,12 @@ const firebaseConfig = {
 };
 
 //Initializing the firebase app
-if(!firebase.getApps.length){
+const firebase = initializeApp(firebaseConfig);
+/*if(!firebase.getApps.length){
   firebase.initializeApp(firebaseConfig);
-}
+}*/
 
-const firestore = firebase.firestore();
+const firestore = getFirestore;
 
 
 //The list of public STUN Servers to use for connections
@@ -45,12 +46,12 @@ let localCam = null;
 let remoteCam = null;
 
 //Importing HTML Elements
-const myCam = document.getElementsById('localCam');
-const theyCam = document.getElementsById('remoteCam');
-const startCam = document.getElementsById('getMedia');
-const callButton = document.getElementsById('initCall');
-const callInput = document.getElementsById('callKey');
-const endCall = document.getElementsById('hangup');
+const myCam = document.getElementById('localCam');
+const theyCam = document.getElementById('remoteCam');
+const startCam = document.getElementById('getMedia');
+const callButton = document.getElementById('initCall');
+const callInput = document.getElementById('callKey');
+const endCall = document.getElementById('hangup');
 const answerButton = document.getElementById('answer');
 
 //Start your webcam and create and empty stream for visitor
