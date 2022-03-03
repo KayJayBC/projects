@@ -1,6 +1,11 @@
-import './style.css'
+
+import './style.css';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+//import { initializeApp } from "firebase/app";
+
+
+
 
 //Configuration of firebase app via firestore
 const firebaseConfig = {
@@ -53,15 +58,22 @@ startCam.onclick = async () => {
   localCam = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
   remoteCam = new MediaStream();
 
-  localCam.getTracks().forEach((track) => {pc.addTrack(track, localCam)}); //This takes the local cam and pushes the data to the peer connection
+  localCam.getTracks().forEach((track) => {
+    pc.addTrack(track, localCam);
+  }); //This takes the local cam and pushes the data to the peer connection
 
-  pc.ontrack = event => {event.streams[0].getTracks().forEach(track => {  //This listens for the remote cam from the peer connection
+  pc.ontrack = (event) => {
+    event.streams[0].getTracks().forEach((track) => {  //This listens for the remote cam from the peer connection
     remoteCam.addTrack(track);
   });
 };
 
   myCam.srcObject = localCam;
   theyCam.srcObject = remoteCam;
+
+  callButton.disabled = false;
+  answerButton.disabled = false;
+  startCam.disabled = true;
 
 };
 
