@@ -1,7 +1,7 @@
 
 //import './style.css';
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js';
-import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.8/firebase-app.js';
+import { getFirestore, collection, doc, setDoc, onSnapshot, query, getDoc, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore.js';
 //import { initializeApp } from "firebase/app";
 
 
@@ -20,11 +20,12 @@ const firebaseConfig = {
 
 //Initializing the firebase app
 const firebase = initializeApp(firebaseConfig);
+const firestore = getFirestore();
 /*if(!firebase.getApps.length){
   firebase.initializeApp(firebaseConfig);
 }*/
 
-const firestore = getFirestore;
+
 
 
 //The list of public STUN Servers to use for connections
@@ -79,77 +80,92 @@ startCam.onclick = async () => {
 };
 
 //Caller creates an offer/initializes call collections
-callButton.onclick = async() => {
-  const callDB = firestore.collection('calls').doc();
-  const offerCandidates = callDB.collection('offerCandidates');
-  const answerCandidates = callDB.collection('answerCandidates');
-
-
-  callInput.value = callDB.id; //This fills the text box with the random ID created via Firestore
+callButton.onclick = async() => { 
+  const callDB = doc(firestore, 'calls/test');
+  const offerCandidates = doc(firestore, 'offerCandidates/candidates');
+  const answerCandidates = doc(firestore, 'answerCandidates/candidates');
 
   //Gets potential ICE candidates (IP and port pair) to save to the database
   pc.onicecandidate = event => {
-    event.candidate && offerCandidates.add(event.candidate.toJSON());
+    event.candidate && setDoc(offerCandidates, event.candidate.toJSON());
   };
 
   //This creates the SDP object or Session Description Protocol
   const offerDescription = await pc.createOffer();
+  //console.log(offerDescription);
   await pc.setLocalDescription(offerDescription);
 
   //Converting SDP object into a JSON object
   const offer = {
     sdp: offerDescription.sdp,
     type: offerDescription.type,
-
   };
 
-  //Writing to firebass database
-  await callDB.set({offer});
+  //Writing to firebase database
+  setDoc(callDB, offer);
+
+  callInput.value = callDB.id;
 
 
   //listens for changes in firestore; waiting for an answer to update peer connection
-  callDB.onSnapshot((snapshot) => {
-    const data = snapshot.data();
+onSnapshot(callDB, (docSnapshot) => {
+    const data = docSnapshot.data();
     if(!pc.currentRemoteDescription && data?.answer){
         const answerDescription = new RTCSessionDescription(data.answer);
         pc.setRemoteDescription(answerDescription);
+    };
+  });
+
+//Listens for answering user then adds them to the peer connection
+const docRef = query(collection(firestore, 'answerCandidates'))
+onSnapshot(docRef, (docSnapshot) => {
+  docSnapshot.docChanges().forEach((doc) =>{
+    if(doc.type === 'added') {
+      const candidate = new RTCIceCandidate(doc.doc.data())
+      pc.addIceCandidate(candidate);
     }
   })
 
-  //Listens for answering user then adds them to the peer connection
-  answerCandidates.onSnapshot(snapshot => {
-    snapshot.docChanges().forEach((change) => {
-      if(change.type === 'added'){
-        const candidate = new RTCIceCandidate(change.doc.data());
-        pc.addIceCandidate(candidate);
-      }
-    });
+})
 
+
+ /* onSnapshot(doc(firestore, 'answerCandidates'), (docSnapshot) => {
+      docSnapshot.docChanges().forEach((change) => { 
+        if(change.type === 'added'){
+          const candidate = new RTCIceCandidate(change.doc.data());
+          pc.addIceCandidate(candidate);
+        }
+      })
+      
   });
-};
+};*/
 
 
 //This will answer a call based off of the ID created by firebase
 answerButton.onclick = async () => {
   const callID = callInput.value;
-  const callDB = firestore.collection('calls').doc(callID);
-  const answerCandidates = callDB.collection('answerCandidates');
+  const callDoc = doc(firestore, 'calls/test');
+  const answerCandidates = doc(firestore, 'answerCandidates/candidates');
 
   pc.onicecandidate = event => {
-    event.candidate && answerCandidates.add(event.candidate.toJSON());
-
+    event.candidate && setDoc(answerCandidates, event.candidate.toJSON());
   };
 
+  const callData = (await getDoc(callDoc)).data();
+  //console.log(callData.data());
+
   const offerDescription = callData.offer;
-  await pc.setRemoteDescription(new RTCSessionDescription(offerDescription))
+  await pc.setRemoteDescription(offerDescription);
+
+  const answerDescription = await pc.createAnswer();
+  await pc.setLocalDescription(answerDescription);
 
   const answer = {
     type: answerDescription.type,
     sdp: answerDescription.sdp,
-
   };
 
-  await callDB.update({ answer });
+  await callDoc.update({ answer });
 
   offerCandidates.onSnapshot((snapshot) => {
     snapshot.docChanges().forEach((change) => {
@@ -162,4 +178,4 @@ answerButton.onclick = async () => {
   });
 
 
-};
+};}
