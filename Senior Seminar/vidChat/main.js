@@ -33,14 +33,14 @@ const firestore = getFirestore();
 const servers = {
   iceList: [
     {
-      urls: ['stun1.l.google.com:19302', 'stun2.l.google.com:19302', 'stun3.l.google.com:19302','stun4.l.google.com:19302'],
+      urls: ['stun1.l.google.com:19302', 'stun2.l.google.com:19302'],
     },
   ],
  iceCandidatePoolSize: 10,
 };
 
 //This is the object resposible for the P2P connection work
-let pc = new RTCPeerConnection(servers);
+const pc = new RTCPeerConnection(servers);
 
 //Objects of each webcam in the chat
 let localCam = null;
@@ -85,8 +85,10 @@ callButton.onclick = async() => {
   const offerCandidates = doc(firestore, 'offerCandidates/candidates');
   const answerCandidates = doc(firestore, 'answerCandidates/candidates');
 
+  callInput.value = callDB.id;
+
   //Gets potential ICE candidates (IP and port pair) to save to the database
-  pc.onicecandidate = event => {
+  pc.onicecandidate = (event) => {
     event.candidate && setDoc(offerCandidates, event.candidate.toJSON());
   };
 
@@ -103,9 +105,6 @@ callButton.onclick = async() => {
 
   //Writing to firebase database
   setDoc(callDB, offer);
-
-  callInput.value = callDB.id;
-
 
   //listens for changes in firestore; waiting for an answer to update peer connection
 onSnapshot(callDB, (docSnapshot) => {
@@ -147,7 +146,7 @@ answerButton.onclick = async () => {
   const callDoc = doc(firestore, 'calls/test');
   const answerCandidates = doc(firestore, 'answerCandidates/candidates');
 
-  pc.onicecandidate = event => {
+  pc.onicecandidate = (event) => {
     event.candidate && setDoc(answerCandidates, event.candidate.toJSON());
   };
 
