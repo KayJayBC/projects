@@ -151,9 +151,9 @@ answerButton.onclick = async () => {
   };
 
   const callData = (await getDoc(callDoc)).data();
-  //console.log(callData.data());
+  console.log(callData);
 
-  const offerDescription = callData.offer;
+  const offerDescription = callData.sdp;
   await pc.setRemoteDescription(offerDescription);
 
   const answerDescription = await pc.createAnswer();
