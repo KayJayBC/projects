@@ -58,11 +58,11 @@ video.addEventListener('play',  async () => {
   canvas.getContext("2d").clearRect(0,0,canvas.width,canvas.height);
   
   //faceapi.draw.drawDetections(canvas, resOptions);
-  const results = resOptions
+  const results = resOptions.map(d => faceMatcher.findBestMatch(d.descriptor))
 
-  resOptions.forEach(detection =>{
-    const box = detection.detection.box;
-    const drawBox = new faceapi.draw.DrawBox(box, {label: 'Face'})
+  results.forEach((result, i) =>{
+    const box = resOptions[i].detection.box;
+    const drawBox = new faceapi.draw.DrawBox(box, {label: result.toString()})
     drawBox.draw(canvas);
   })
   //onBox.draw(canvas)
@@ -79,8 +79,8 @@ function loadImages(){
     
       for(let i = 1; i<=2; i++){
         const img = await faceapi.fetchImage(`images/${label}/${i}.jpg`)
-        const detect = await faceapi.detechSingleFace(img).withFaceLandmarks().withFaceDescriptors()
-        descriptions.push(detections.descriptor)
+        const detect = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
+        descriptions.push(detect.descriptor)
       }
 
       return new faceapi.LabeledFaceDescriptors(label, descriptions)
@@ -105,4 +105,4 @@ function intervalConfirm(){
   let intervalID = setInterval(confirmUser, 10000)
 }
 
-intervalConfirm()
+//intervalConfirm()
