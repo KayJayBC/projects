@@ -35,7 +35,9 @@ function handleSuccess(stream){
   video.srcObject = stream;
 }
 
-video.addEventListener('play', () => {
+video.addEventListener('play',  async () => {
+  const labeledFaceDescriptors = await loadImages()
+  const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6)
   const canvas = faceapi.createCanvasFromMedia(video);
   document.body.append(canvas);
 
@@ -46,16 +48,18 @@ video.addEventListener('play', () => {
   const resOptions = faceapi.resizeResults(detections, displaySize);
 
   
-  const anchor = {x: video.width, y: video.height-45}
+  /**const anchor = {x: video.width, y: video.height-45}
   const drawOptions = {
     anchorPosition: 'TOP_LEFT'
-  }
+  }*/
   
-  const onBox = new faceapi.draw.DrawTextField(text, anchor, drawOptions)
+  //const onBox = new faceapi.draw.DrawTextField(text, anchor, drawOptions)
   
   canvas.getContext("2d").clearRect(0,0,canvas.width,canvas.height);
   
   //faceapi.draw.drawDetections(canvas, resOptions);
+  const results = resOptions
+
   resOptions.forEach(detection =>{
     const box = detection.detection.box;
     const drawBox = new faceapi.draw.DrawBox(box, {label: 'Face'})
@@ -65,6 +69,25 @@ video.addEventListener('play', () => {
 
  }, 100)
 })}
+
+
+function loadImages(){
+  const labels = ['Kionte Baker']
+  return Promise.all(
+    labels.map(async label =>{
+      const descriptions = []
+    
+      for(let i = 1; i<=2; i++){
+        const img = await faceapi.fetchImage(`images/${label}/${i}.jpg`)
+        const detect = await faceapi.detechSingleFace(img).withFaceLandmarks().withFaceDescriptors()
+        descriptions.push(detections.descriptor)
+      }
+
+      return new faceapi.LabeledFaceDescriptors(label, descriptions)
+    })
+  )
+
+}
 
 
 async function confirmUser(){
