@@ -8,7 +8,7 @@ const constraints = {
   video: true
 };
 
-let text = 'null/unknown'
+let text = ''
 submitButton.onclick = async () => {
  text = input.value
 }
@@ -62,8 +62,15 @@ video.addEventListener('play',  async () => {
 
   results.forEach((result, i) =>{
     const box = resOptions[i].detection.box;
-    const drawBox = new faceapi.draw.DrawBox(box, {label: result.toString()})
+    const drawBox = new faceapi.draw.DrawBox(box, {label: useRegex(result.toString())[0]})
     drawBox.draw(canvas);
+    console.log('this' + useRegex(result.toString())[0]);
+    if(text === ''){
+      text == useRegex(result.toString())
+      console.log(text)
+    }else if(useRegex(result.toString())[0] === null){
+      alert('Unknown User Detected')
+    }
   })
   //onBox.draw(canvas)
 
@@ -78,11 +85,10 @@ function loadImages(){
       const descriptions = []
     
       for(let i = 1; i<=2; i++){
-        const img = await faceapi.fetchImage(`images/${label}/${i}.jpg`)
+        const img = await faceapi.fetchImage(`https://raw.githubusercontent.com/KayJayBC/projects/main/Senior%20Seminar/faceRec/images/${label}/${i}.jpg`)
         const detect = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
         descriptions.push(detect.descriptor)
       }
-
       return new faceapi.LabeledFaceDescriptors(label, descriptions)
     })
   )
@@ -103,6 +109,11 @@ async function confirmUser(){
 
 function intervalConfirm(){
   let intervalID = setInterval(confirmUser, 10000)
+}
+
+function useRegex(input) {
+  let regex = /[a-zA-Z]+ [a-zA-Z]+/i;
+  return input.match(regex);
 }
 
 //intervalConfirm()
