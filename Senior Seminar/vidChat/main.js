@@ -121,7 +121,7 @@ onSnapshot(docRef, (docSnapshot) => {
   docSnapshot.docChanges().forEach((doc) =>{
     if(doc.type === 'added') {
       const candidate = new RTCIceCandidate(doc.doc.data())
-      pc.addIceCandidate(candidate);
+      pc.addIceCandidate(new RTCIceCandidate(candidate));
     }
   })
 
@@ -153,8 +153,8 @@ answerButton.onclick = async () => {
   const callData = (await getDoc(callDoc)).data();
   console.log(callData);
 
-  const offerDescription = callData.sdp;
-  await pc.setRemoteDescription(offerDescription);
+  const offerDescription = callData.offer;
+  await pc.setRemoteDescription(new RTCSessionDescription(offerDescription));
 
   const answerDescription = await pc.createAnswer();
   await pc.setLocalDescription(answerDescription);
@@ -164,7 +164,7 @@ answerButton.onclick = async () => {
     sdp: answerDescription.sdp,
   };
 
-  await callDoc.update({ answer });
+  setDoc(answerCandidates, answer);
 
   offerCandidates.onSnapshot((snapshot) => {
     snapshot.docChanges().forEach((change) => {
