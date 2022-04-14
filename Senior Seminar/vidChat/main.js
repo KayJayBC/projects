@@ -153,8 +153,14 @@ answerButton.onclick = async () => {
   const callData = (await getDoc(callDoc)).data();
   console.log(callData);
 
-  const offerDescription = callData.offer;
-  await pc.setRemoteDescription(new RTCSessionDescription(offerDescription));
+  const offerDescription = JSON.parse(callData);
+  console.log(offerDescription);
+  
+  if(offerDescription.sdp){
+    await pc.setRemoteDescription(new RTCSessionDescription(offerDescription));
+  }
+
+  //await pc.setRemoteDescription(new RTCSessionDescription(offerDescription));
 
   const answerDescription = await pc.createAnswer();
   await pc.setLocalDescription(answerDescription);
