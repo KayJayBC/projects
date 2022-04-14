@@ -29,6 +29,7 @@ def encrypt(message: bytes, key: bytes) -> bytes:
 
 def decrypt(message: bytes, token: bytes) -> bytes:
     return Fernet(token).decrypt(message)
+
 #Database
 with sqlite3.connect("passVault.db") as db:
     cursor = db.cursor()
@@ -101,7 +102,7 @@ def firstScreen():
             recoveryKey = hashPass(key.encode('utf-8'))
 
             global encryptionKey
-            encryptionKey = base64.urlsafe_b64decode(kdf.derive(text.get().encode()))
+            encryptionKey = base64.urlsafe_b64encode(kdf.derive(text.get().encode()))
 
             insert_password = """INSERT INTO masterpassword(password, recoveryKey)
                 VALUES(?, ?) """
