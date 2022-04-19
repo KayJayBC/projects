@@ -1,0 +1,75 @@
+body{
+    margin: 0;
+    font-family: Arial, Times, serif, sans-serif;
+    background-color: rgb(255, 255, 255);
+}
+
+.title{
+    top: 0;
+    width: 100%;
+    max-width: 100%;
+    z-index: 1;
+    display: block;
+  
+    position: absolute;
+    background-color: #000000;
+    color: white;
+   margin: 0;
+}
+
+.entry-modal{
+    border: 1px solid #000000;
+    width: 300px;
+    margin: auto;
+    z-index: 9999;
+    position: absolute;
+    left: 50%;
+    top: 70;
+    margin-left: -150px;
+    padding: 5px;
+    color: #fff;
+    background-color: #000000;
+    text-align: center;
+}
+
+#notification{
+    position: absolute;
+    z-index: 1;
+    text-align: center;
+    color: #fff;
+    margin: 0;
+    top: 47.33px;
+    font-size: 18pt;
+    width: 100%;
+    background-color: rgb(0, 0, 0);
+}
+
+
+.room-input{
+  border: none;
+  padding:5px;
+}
+
+button{
+    margin: 3px;
+    padding: 5px;
+}
+
+#remote-video{
+    position: center;
+    width: 720px;
+    height: 480px;
+}
+
+#local-video{
+    position: center;
+    width: 720px;
+    height: 480px;
+}
+.meet-controls-bar{
+    bottom: 0;
+    background-color: black;
+    left: 0;
+    position: absolute;
+    width: 100%;
+}
