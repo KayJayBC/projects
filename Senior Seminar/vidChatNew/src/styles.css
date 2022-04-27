@@ -66,6 +66,15 @@ button{
     width: 720px;
     height: 480px;
 }
+
+.meet-area{
+position: absolute;
+left: 50%;
+top: 50%;
+transform: translate(-50%, -50%);
+padding: 200px;
+}
+
 .meet-controls-bar{
     bottom: 0;
     background-color: black;
